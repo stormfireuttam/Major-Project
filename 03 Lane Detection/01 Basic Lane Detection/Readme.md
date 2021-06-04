@@ -1,4 +1,4 @@
-## Canny Edge Detection
+## A) Canny Edge Detection
 
 Canny Edge Detection is a popular edge detection algorithm. It was developed by John F. Canny in
 
@@ -47,3 +47,52 @@ plt.show()
 ```
 
 ![image](https://user-images.githubusercontent.com/40880896/120823498-1f2fbd80-c575-11eb-9aef-6b8bdcf7a4e1.png)
+
+## B) Hough Transform
+
+### What is Hough transform?
+
+Hough transform is a feature extraction method for detecting simple shapes such as circles, lines etc in an image.
+
+A “simple” shape is one that can be represented by only a few parameters. For example, a line can be represented by two parameters (slope, intercept) and a circle has three parameters — the coordinates of the center and the radius (x, y, r). Hough transform does an excellent job in finding such shapes in an image.
+
+The main advantage of using the Hough transform is that it is insensitive to occlusion.
+
+Let’s see how Hough transform works by way of an example.
+
+### Hough transform to detect lines in an image
+
+![image](https://user-images.githubusercontent.com/40880896/120840508-fb29a780-c587-11eb-8e09-4896680aa507.png)
+
+### Equation of a line in polar coordinates
+
+![image](https://user-images.githubusercontent.com/40880896/120840783-480d7e00-c588-11eb-96a7-6b0ec2f733ba.png)
+
+### Accumulator
+
+![image](https://user-images.githubusercontent.com/40880896/120840973-89059280-c588-11eb-97e8-894a0ec45da5.png)
+
+![image](https://user-images.githubusercontent.com/40880896/120841035-a0448000-c588-11eb-80b7-8f0b7a3636ab.png)
+
+![image](https://user-images.githubusercontent.com/40880896/120841103-b3575000-c588-11eb-8209-5361a7180252.png)
+
+![image](https://user-images.githubusercontent.com/40880896/120841269-eb5e9300-c588-11eb-8c9a-17e355ecb612.png)
+
+![image](https://user-images.githubusercontent.com/40880896/120841318-fca79f80-c588-11eb-81d6-b52d6db7d01f.png)
+
+![image](https://user-images.githubusercontent.com/40880896/120841429-1943d780-c589-11eb-863c-0fe7ec818d3b.png)
+
+### HoughLine: How to Detect Lines using OpenCV
+
+![image](https://user-images.githubusercontent.com/40880896/120841526-3bd5f080-c589-11eb-8537-629277f572c9.png)
+
+![image](https://user-images.githubusercontent.com/40880896/120841593-4ee8c080-c589-11eb-8c9f-bf45be2a2880.png)
+
+### Line Detection Result
+
+Below we show a result of using hough transform for line detection. Bear in mind the quality of detected lines depends heavily on the quality of the edge map. Therefore, in the real world Hough transform is used when you can control the environment and therefore obtain consistent edge maps or when you can train an edge detector for the specific kind of edges you are looking for.
+
+![image](https://user-images.githubusercontent.com/40880896/120841743-83f51300-c589-11eb-8873-33cc4399b4fa.png)
+
+![image](https://user-images.githubusercontent.com/40880896/120841802-97a07980-c589-11eb-9b09-284f132230b4.png)
+
