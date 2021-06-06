@@ -1,4 +1,4 @@
-## Advanced Lane Finding
+## Lane Finding
 
 The Project
 ---
