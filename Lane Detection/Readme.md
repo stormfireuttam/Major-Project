@@ -44,7 +44,7 @@ The following describes and illustrates the steps involved in the lane detection
 ### Undistort image
 Using the camera calibration matrices in 'calibrate_camera.p', we undistort the input image. Below is the example image above, undistorted:
 
-![image](https://user-images.githubusercontent.com/40880896/120981399-4369e500-c795-11eb-80d4-8a162d700233.png)
+![image](https://user-images.githubusercontent.com/40880896/121215782-ee65c600-c89d-11eb-8160-953797d364b3.png)
 
 The code to perform camera calibration is in **CameraCalibration** class. 
 
