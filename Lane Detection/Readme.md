@@ -1,4 +1,4 @@
-# Advanced Lane Detection
+# Project 1 - Advanced Lane Detection
 
 ![image](https://user-images.githubusercontent.com/40880896/120982233-179b2f00-c796-11eb-8fe8-12b68f4c24fc.png)
 
@@ -28,7 +28,7 @@ The camera was calibrated using the chessboard images in 'camera_cal/*.jpg'. The
 * Convert to grayscale
 * Find chessboard corners with OpenCV's `findChessboardCorners()` function, assuming a 9x6 board
 
-After the above steps were executed for all calibration images, I used OpenCV's `calibrateCamera()` function to calculate the distortion matrices. Using the distortion matrices, I undistort images using OpenCV's `undistort()` function.
+After the above steps were executed for all calibration images, we used OpenCV's `calibrateCamera()` function to calculate the distortion matrices. Using the distortion matrices, we undistort images using OpenCV's `undistort()` function.
 
 To illustrate, here is the comparison between the distorted and undistorted image via camera calibration:
 
@@ -42,14 +42,14 @@ The following describes and illustrates the steps involved in the lane detection
 ![image](https://user-images.githubusercontent.com/40880896/120971186-fa606380-c789-11eb-848b-4e1ebc65deae.png)
 
 ### Undistort image
-Using the camera calibration matrices in 'calibrate_camera.p', I undistort the input image. Below is the example image above, undistorted:
+Using the camera calibration matrices in 'calibrate_camera.p', we undistort the input image. Below is the example image above, undistorted:
 
 ![image](https://user-images.githubusercontent.com/40880896/120981399-4369e500-c795-11eb-80d4-8a162d700233.png)
 
-The code to perform camera calibration is in 'calibrate_camera.py'. For all images in 'test_images/\*.jpg', the undistorted version of that image is saved in 'output_images/undistort_\*.png'.
+The code to perform camera calibration is in **CameraCalibration** class. 
 
 ### Thresholded binary image
-The next step is to create a thresholded binary image, taking the undistorted image as input. The goal is to identify pixels that are likely to be part of the lane lines. In particular, I perform the following:
+The next step is to create a thresholded binary image, taking the undistorted image as input. The goal is to identify pixels that are likely to be part of the lane lines. In particular, we perform the following:
 
 * Apply the following filters with thresholding, to create separate "binary images" corresponding to each individual filter
   * Absolute horizontal Sobel operator on the image
@@ -62,21 +62,21 @@ Here is the example image, transformed into a binary image by combining the abov
 
 ![image](https://user-images.githubusercontent.com/40880896/120981571-6b594880-c795-11eb-8aa2-722304a28b20.png)
 
-The code to generate the thresholded binary image is in 'combined_thresh.py', in particular the function `combined_thresh()`. For all images in 'test_images/\*.jpg', the thresholded binary version of that image is saved in 'output_images/binary_\*.png'.
+The code to generate the thresholded binary image is in **Thresholding** class, in particular the function `combined_thresh()`.
 
 ### Perspective transform
 Given the thresholded binary image, the next step is to perform a perspective transform. The goal is to transform the image such that we get a "bird's eye view" of the lane, which enables us to fit a curved line to the lane lines (e.g. polynomial fit). Another thing this accomplishes is to "crop" an area of the original image that is most likely to have the lane line pixels.
 
-To accomplish the perspective transform, I use OpenCV's `getPerspectiveTransform()` and `warpPerspective()` functions. I hard-code the source and destination points for the perspective transform. The source and destination points were visually determined by manual inspection, although an important enhancement would be to algorithmically determine these points.
+To accomplish the perspective transform, we use OpenCV's `getPerspectiveTransform()` and `warpPerspective()` functions. We hard-code the source and destination points for the perspective transform. The source and destination points were visually determined by manual inspection, although an important enhancement would be to algorithmically determine these points.
 
 Here is the example image, after applying perspective transform:
 
 ![image](https://user-images.githubusercontent.com/40880896/120981651-7f04af00-c795-11eb-80a3-2c9988196c20.png)
 
-The code to perform perspective transform is in 'perspective_transform.py', in particular the function `perspective_transform()`. For all images in 'test_images/\*.jpg', the warped version of that image (i.e. post-perspective-transform) is saved in 'output_images/warped_\*.png'.
+The code to perform perspective transform is in **PerspectiveTransformation** class, in particular the function `perspective_transform()`. 
 
 ### Polynomial fit
-Given the warped binary image from the previous step, I now fit a 2nd order polynomial to both left and right lane lines. In particular, I perform the following:
+Given the warped binary image from the previous step, we now fit a 2nd order polynomial to both left and right lane lines. In particular, we perform the following:
 
 * Calculate a histogram of the bottom half of the image
 * Partition the image into 9 horizontal slices
@@ -84,31 +84,22 @@ Given the warped binary image from the previous step, I now fit a 2nd order poly
 * Go up the horizontal window slices to find pixels that are likely to be part of the left and right lanes, recentering the sliding windows opportunistically
 * Given 2 groups of pixels (left and right lane line candidate pixels), fit a 2nd order polynomial to each group, which represents the estimated left and right lane lines
 
-The code to perform the above is in the `line_fit()` function of 'line_fit.py'.
-
 Since our goal is to find lane lines from a video stream, we can take advantage of the temporal correlation between video frames.
 
-Given the polynomial fit calculated from the previous video frame, one performance enhancement I implemented is to search +/- 100 pixels horizontally from the previously predicted lane lines. Then we simply perform a 2nd order polynomial fit to those pixels found from our quick search. In case we don't find enough pixels, we can return an error (e.g. `return None`), and the function's caller would ignore the current frame (i.e. keep the lane lines the same) and be sure to perform a full search on the next frame. Overall, this will improve the speed of the lane detector, useful if we were to use this detector in a production self-driving car. The code to perform an abbreviated search is in the `tune_fit()` function of 'line_fit.py'.
-
-Another enhancement to exploit the temporal correlation is to smooth-out the polynomial fit parameters. The benefit to doing so would be to make the detector more robust to noisy input. I used a simple moving average of the polynomial coefficients (3 values per lane line) for the most recent 5 video frames. The code to perform this smoothing is in the function `add_fit()` of the class `Line` in the file 'Line.py'. The `Line` class was used as a helper for this smoothing function specifically, and `Line` instances are global objects in 'line_fit.py'.
-
-Below is an illustration of the output of the polynomial fit, for our original example image. For all images in 'test_images/\*.jpg', the polynomial-fit-annotated version of that image is saved in 'output_images/polyfit_\*.png'.
+Below is an illustration of the output of the polynomial fit, for our original example image. 
 
 ![image](https://user-images.githubusercontent.com/40880896/120981695-8deb6180-c795-11eb-9984-f750eb58a41c.png)
 
 ### Radius of curvature
-Given the polynomial fit for the left and right lane lines, I calculated the radius of curvature for each line according to formulas presented [here](http://www.intmath.com/applications-differentiation/8-radius-curvature.php). I also converted the distance units from pixels to meters, assuming 30 meters per 720 pixels in the vertical direction, and 3.7 meters per 700 pixels in the horizontal direction.
+Given the polynomial fit for the left and right lane lines, we calculated the radius of curvature for each line according to formulas presented [here](http://www.intmath.com/applications-differentiation/8-radius-curvature.php). We also converted the distance units from pixels to meters, assuming 30 meters per 720 pixels in the vertical direction, and 3.7 meters per 700 pixels in the horizontal direction.
 
-Finally, I averaged the radius of curvature for the left and right lane lines, and reported this value in the final video's annotation.
-
-The code to calculate the radius of curvature is in the function `calc_curve()` in 'line_fit.py'.
+Finally, we averaged the radius of curvature for the left and right lane lines, and reported this value in the final video's annotation.
 
 ### Vehicle offset from lane center
-Given the polynomial fit for the left and right lane lines, I calculated the vehicle's offset from the lane center. The vehicle's offset from the center is annotated in the final video. I made the same assumptions as before when converting from pixels to meters.
+Given the polynomial fit for the left and right lane lines, we calculated the vehicle's offset from the lane center. The vehicle's offset from the center is annotated in the final video. We made the same assumptions as before when converting from pixels to meters.
 
-To calculate the vehicle's offset from the center of the lane line, I assumed the vehicle's center is the center of the image. I calculated the lane's center as the mean x value of the bottom x value of the left lane line, and bottom x value of the right lane line. The offset is simply the vehicle's center x value (i.e. center x value of the image) minus the lane's center x value.
+To calculate the vehicle's offset from the center of the lane line, we assumed the vehicle's center is the center of the image. We calculated the lane's center as the mean x value of the bottom x value of the left lane line, and bottom x value of the right lane line. The offset is simply the vehicle's center x value (i.e. center x value of the image) minus the lane's center x value.
 
-The code to calculate the vehicle's lane offset is in the function `calc_vehicle_offset()` in 'line_fit.py'.
 
 ### Annotate original image with lane area
 Given all the above, we can annotate the original image with the lane area, and information about the lane curvature and vehicle offset. Below are the steps to do so:
@@ -119,9 +110,7 @@ Given all the above, we can annotate the original image with the lane area, and 
 * Overlay the above annotation on the original image
 * Add text to the original image to display lane curvature and vehicle offset
 
-The code to perform the above is in the function `final_viz()` in 'line_fit.py'.
-
-Below is the final annotated version of our original image. For all images in 'test_images/\*.jpg', the final annotated version of that image is saved in 'output_images/annotated_\*.png'.
+Below is the final annotated version of our original image.
 
 ![image](https://user-images.githubusercontent.com/40880896/120981980-d6a31a80-c795-11eb-81e5-abfb0028dbe4.png)
 
