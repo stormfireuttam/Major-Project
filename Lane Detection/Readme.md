@@ -41,14 +41,14 @@ The following describes and illustrates the steps involved in the lane detection
 
 ![image](https://user-images.githubusercontent.com/40880896/120971186-fa606380-c789-11eb-848b-4e1ebc65deae.png)
 
-### Undistort image
+### A) Undistort image
 Using the camera calibration matrices in 'calibrate_camera.p', we undistort the input image. Below is the example image above, undistorted:
 
 ![image](https://user-images.githubusercontent.com/40880896/121215782-ee65c600-c89d-11eb-8160-953797d364b3.png)
 
 The code to perform camera calibration is in **CameraCalibration** class. 
 
-### Thresholded binary image
+### B) Thresholded binary image
 The next step is to create a thresholded binary image, taking the undistorted image as input. The goal is to identify pixels that are likely to be part of the lane lines. In particular, we perform the following:
 
 * Apply the following filters with thresholding, to create separate "binary images" corresponding to each individual filter
@@ -64,7 +64,7 @@ Here is the example image, transformed into a binary image by combining the abov
 
 The code to generate the thresholded binary image is in **Thresholding** class, in particular the function `combined_thresh()`.
 
-### Perspective transform
+### C) Perspective transform
 Given the thresholded binary image, the next step is to perform a perspective transform. The goal is to transform the image such that we get a "bird's eye view" of the lane, which enables us to fit a curved line to the lane lines (e.g. polynomial fit). Another thing this accomplishes is to "crop" an area of the original image that is most likely to have the lane line pixels.
 
 To accomplish the perspective transform, we use OpenCV's `getPerspectiveTransform()` and `warpPerspective()` functions. We hard-code the source and destination points for the perspective transform. The source and destination points were visually determined by manual inspection, although an important enhancement would be to algorithmically determine these points.
@@ -75,7 +75,7 @@ Here is the example image, after applying perspective transform:
 
 The code to perform perspective transform is in **PerspectiveTransformation** class, in particular the function `perspective_transform()`. 
 
-### Polynomial fit
+### D) Polynomial fit
 Given the warped binary image from the previous step, we now fit a 2nd order polynomial to both left and right lane lines. In particular, we perform the following:
 
 * Calculate a histogram of the bottom half of the image
@@ -90,18 +90,18 @@ Below is an illustration of the output of the polynomial fit, for our original e
 
 ![image](https://user-images.githubusercontent.com/40880896/121221521-46eb9200-c8a3-11eb-8512-2a0ba4f858a0.png)
 
-### Radius of curvature
+### E) Radius of curvature
 Given the polynomial fit for the left and right lane lines, we calculated the radius of curvature for each line according to formulas presented [here](http://www.intmath.com/applications-differentiation/8-radius-curvature.php). We also converted the distance units from pixels to meters, assuming 30 meters per 720 pixels in the vertical direction, and 3.7 meters per 700 pixels in the horizontal direction.
 
 Finally, we averaged the radius of curvature for the left and right lane lines, and reported this value in the final video's annotation.
 
-### Vehicle offset from lane center
+### F) Vehicle offset from lane center
 Given the polynomial fit for the left and right lane lines, we calculated the vehicle's offset from the lane center. The vehicle's offset from the center is annotated in the final video. We made the same assumptions as before when converting from pixels to meters.
 
 To calculate the vehicle's offset from the center of the lane line, we assumed the vehicle's center is the center of the image. We calculated the lane's center as the mean x value of the bottom x value of the left lane line, and bottom x value of the right lane line. The offset is simply the vehicle's center x value (i.e. center x value of the image) minus the lane's center x value.
 
 
-### Annotate original image with lane area
+### G) Annotate original image with lane area
 Given all the above, we can annotate the original image with the lane area, and information about the lane curvature and vehicle offset. Below are the steps to do so:
 
 * Create a blank image, and draw our polyfit lines (estimated left and right lane lines)
