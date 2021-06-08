@@ -60,7 +60,7 @@ The next step is to create a thresholded binary image, taking the undistorted im
 
 Here is the example image, transformed into a binary image by combining the above thresholded binary filters:
 
-![image](https://user-images.githubusercontent.com/40880896/120981571-6b594880-c795-11eb-8aa2-722304a28b20.png)
+![image](https://user-images.githubusercontent.com/40880896/121221129-e3616480-c8a2-11eb-8dd4-61d71b9beac3.png)
 
 The code to generate the thresholded binary image is in **Thresholding** class, in particular the function `combined_thresh()`.
 
@@ -71,7 +71,7 @@ To accomplish the perspective transform, we use OpenCV's `getPerspectiveTransfor
 
 Here is the example image, after applying perspective transform:
 
-![image](https://user-images.githubusercontent.com/40880896/120981651-7f04af00-c795-11eb-80a3-2c9988196c20.png)
+![image](https://user-images.githubusercontent.com/40880896/121221317-1277d600-c8a3-11eb-86a1-a05aea03266c.png)
 
 The code to perform perspective transform is in **PerspectiveTransformation** class, in particular the function `perspective_transform()`. 
 
@@ -88,7 +88,7 @@ Since our goal is to find lane lines from a video stream, we can take advantage 
 
 Below is an illustration of the output of the polynomial fit, for our original example image. 
 
-![image](https://user-images.githubusercontent.com/40880896/120981695-8deb6180-c795-11eb-9984-f750eb58a41c.png)
+![image](https://user-images.githubusercontent.com/40880896/121221521-46eb9200-c8a3-11eb-8512-2a0ba4f858a0.png)
 
 ### Radius of curvature
 Given the polynomial fit for the left and right lane lines, we calculated the radius of curvature for each line according to formulas presented [here](http://www.intmath.com/applications-differentiation/8-radius-curvature.php). We also converted the distance units from pixels to meters, assuming 30 meters per 720 pixels in the vertical direction, and 3.7 meters per 700 pixels in the horizontal direction.
